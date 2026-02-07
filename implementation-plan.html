@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Running Coach MVP - Implementation Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: #1e40af;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 22px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .context {
+            background: #eff6ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .phase {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .phase h3 {
+            color: #059669;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        code {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        pre {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .file-list li {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .create-list li {
+            background: #ecfdf5;
+            border-left-color: #10b981;
+        }
+
+        .reuse-list li {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+
+        .order-list {
+            counter-reset: phase-counter;
+        }
+
+        .order-list > li {
+            counter-increment: phase-counter;
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 12px;
+        }
+
+        .order-list > li::before {
+            content: counter(phase-counter);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+        }
+
+        .box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .screen-preview {
+            background: #1f2937;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .thresholds {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .audio-file {
+            background: #fef3c7;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Running Coach MVP - Implementation Plan</h1>
+
+        <div class="context">
+            <strong>Context:</strong><br>
+            This plan implements the AI Running Coach MVP, a React Native app that provides real-time voice coaching during runs based on Garmin watch data. The MVP focuses on a single "killer scenario" - detecting uphill fatigue and delivering encouraging voice tips at the right moment.
+        </div>
+
+        <h2>Phase 1: Cleanup - Remove Starter Code</h2>
+
+        <h3>Files to Delete</h3>
+        <ul class="file-list">
+            <li><code>app\(tabs)\explore.tsx</code></li>
+            <li><code>app\modal.tsx</code></li>
+            <li><code>components\hello-wave.tsx</code></li>
+            <li><code>components\parallax-scroll-view.tsx</code></li>
+            <li><code>components\external-link.tsx</code></li>
+            <li><code>components\ui\collapsible.tsx</code></li>
+        </ul>
+
+        <h3>Files to Modify</h3>
+        <ul class="file-list">
+            <li><strong><code>app/_layout.tsx</code></strong> - Remove modal route reference</li>
+            <li><strong><code>app/(tabs)/_layout.tsx</code></strong> - Remove "Explore" tab, keep only Home</li>
+            <li><strong><code>app/(tabs)/index.tsx</code></strong> - Replace with simple coach toggle UI (keep ThemedView, ThemedText)</li>
+        </ul>
+
+        <h3>Assets to Clean</h3>
+        <p>Remove demo React logos from <code>assets\images\</code>:</p>
+        <ul class="file-list">
+            <li>partial-react-logo.png</li>
+            <li>react-logo.png</li>
+            <li>react-logo@2x.png</li>
+            <li>react-logo@3x.png</li>
+        </ul>
+
+        <h2>Phase 2: Create Directory Structure & Types</h2>
+
+        <h3>New Directories</h3>
+        <ul class="file-list create-list">
+            <li><code>components\coach\</code> - Coach-related UI components</li>
+            <li><code>components\run\</code> - Run summary components</li>
+            <li><code>components\common\</code> - Shared UI components</li>
+            <li><code>services\</code> - Backend services (storage, oauth, etc.)</li>
+            <li><code>stores\</code> - State management (Zustand)</li>
+            <li><code>types\</code> - TypeScript type definitions</li>
+            <li><code>audio\</code> - Audio message configuration & player</li>
+        </ul>
+
+        <h3>Type Files to Create</h3>
+        <ul class="file-list create-list">
+            <li><code>types/coach.ts</code> - CoachStatus, CoachTone, CoachState, CoachingEvent</li>
+            <li><code>types/garmin.ts</code> - GarminUserProfile, GarminConnection, GarminRunData</li>
+            <li><code>types/run.ts</code> - RunStatus, RunSession, RunSummary</li>
+            <li><code>types/subscription.ts</code> - SubscriptionTier, SubscriptionStatus, IAPProduct</li>
+            <li><code>types/storage.ts</code> - StoredUserData</li>
+        </ul>
+
+        <h2>Phase 3: Core UI Components</h2>
+
+        <h3>Components to Create</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Path</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Coach Toggle</td>
+                    <td><code>components/coach/coach-toggle.tsx</code></td>
+                    <td>ON/OFF switch for coach</td>
+                </tr>
+                <tr>
+                    <td>Garmin Button</td>
+                    <td><code>components/coach/garmin-button.tsx</code></td>
+                    <td>Connect Garmin OAuth button</td>
+                </tr>
+                <tr>
+                    <td>Tone Selector</td>
+                    <td><code>components/coach/tone-selector.tsx</code></td>
+                    <td>Tone selection (Encouraging only)</td>
+                </tr>
+                <tr>
+                    <td>Upgrade Prompt</td>
+                    <td><code>components/coach/upgrade-prompt.tsx</code></td>
+                    <td>Pro subscription prompt</td>
+                </tr>
+                <tr>
+                    <td>Summary Card</td>
+                    <td><code>components/run/summary-card.tsx</code></td>
+                    <td>Post-run summary display</td>
+                </tr>
+                <tr>
+                    <td>Metric Display</td>
+                    <td><code>components/run/metric-display.tsx</code></td>
+                    <td>Individual metric display</td>
+                </tr>
+                <tr>
+                    <td>Loading Spinner</td>
+                    <td><code>components/common/loading-spinner.tsx</code></td>
+                    <td>Loading indicator</td>
+                </tr>
+                <tr>
+                    <td>Toast Message</td>
+                    <td><code>components/common/toast-message.tsx</code></td>
+                    <td>Toast notifications</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="box">
+            <strong>Reuse existing components:</strong> <code>themed-view.tsx</code>, <code>themed-text.tsx</code> (for consistent theming)
+        </div>
+
+        <h2>Phase 4: Services & Data Persistence</h2>
+
+        <h3>Services to Create</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Path</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Storage</td>
+                    <td><code>services/storage.ts</code></td>
+                    <td>Secure storage wrapper (Keychain/Keystore)</td>
+                </tr>
+                <tr>
+                    <td>Garmin OAuth</td>
+                    <td><code>services/garmin-oauth.ts</code></td>
+                    <td>Garmin Connect OAuth flow</td>
+                </tr>
+                <tr>
+                    <td>Garmin Data Stream</td>
+                    <td><code>services/garmin-data-stream.ts</code></td>
+                    <td>Real-time data streaming</td>
+                </tr>
+                <tr>
+                    <td>Coach Engine</td>
+                    <td><code>services/coach-engine.ts</code></td>
+                    <td>Detection logic & coaching triggers</td>
+                </tr>
+                <tr>
+                    <td>Subscription</td>
+                    <td><code>services/subscription.ts</code></td>
+                    <td>IAP subscription management</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Stores to Create (Zustand)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Store</th>
+                    <th>Path</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Coach Store</td>
+                    <td><code>stores/coach-store.ts</code></td>
+                    <td>Coach state (on/off, tone)</td>
+                </tr>
+                <tr>
+                    <td>User Store</td>
+                    <td><code>stores/user-store.ts</code></td>
+                    <td>User data & Garmin connection</td>
+                </tr>
+                <tr>
+                    <td>Run Store</td>
+                    <td><code>stores/run-store.ts</code></td>
+                    <td>Run session & events</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Dependencies to Add</h3>
+        <pre><code>{
+  "expo-av": "~15.0.7",              // Audio playback
+  "expo-secure-store": "~14.0.1",     // Secure storage
+  "expo-auth-session": "~7.0.0",     // OAuth flow
+  "expo-haptics": "~14.0.1",         // Already installed - haptic feedback
+  "react-native-iap": "^12.15.0",    // In-App Purchases
+  "zustand": "^5.0.0",               // State management
+  "crypto-js": "^4.2.0"              // Hashing Garmin user ID
+}</code></pre>
+
+        <h2>Phase 5: Garmin Integration</h2>
+
+        <h3>Implementation Strategy</h3>
+        <div class="box">
+            <strong>MVP Approach:</strong> Start with mock data → Integrate Garmin Connect API
+        </div>
+
+        <ol>
+            <li><strong>Mock Data Service</strong> - Simulate grade, pace, heart rate for testing</li>
+            <li><strong>OAuth Flow</strong> - Use <code>expo-auth-session</code> for Garmin Connect</li>
+            <li><strong>Data Polling</strong> - Fetch run data via Garmin Connect API endpoints</li>
+            <li><strong>Native SDK Bridge</strong> - Future: Real-time Bluetooth streaming</li>
+        </ol>
+
+        <h3>Detection Rules (constants/coach.ts)</h3>
+        <div class="thresholds">
+            <pre><code>export const COACHING_THRESHOLDS = {
+  GRADE_MIN_PERCENT: 3,      // Grade >= 3%
+  PACE_DROP_PERCENT: 7,      // Pace drops >= 7% vs last 5 min
+  HR_TREND_WINDOW: 300000,  // 5 minutes in ms
+  MESSAGE_COOLDOWN: 60000,  // 60 seconds between messages
+};</code></pre>
+        </div>
+
+        <h2>Phase 6: Audio System</h2>
+
+        <h3>Audio Files (assets/audio/encouraging/)</h3>
+        <div class="audio-file">climb_1.mp3 - "Ease the pace. Shorten your stride. You're doing fine."</div>
+        <div class="audio-file">climb_2.mp3 - "This climb counts. Breathe steady."</div>
+        <div class="audio-file">climb_3.mp3 - "Slow is strong. Stay tall."</div>
+        <div class="audio-file">climb_4.mp3 - "You didn't come this far to stop."</div>
+        <div class="audio-file">climb_5.mp3 - "Control the effort, not the hill."</div>
+
+        <h3>Audio Player (audio/player.ts)</h3>
+        <ul>
+            <li>Preload all audio at app start</li>
+            <li>Play with haptic feedback using <code>expo-haptics</code></li>
+            <li>Queue system to prevent overlapping messages</li>
+        </ul>
+
+        <h2>Phase 7: App Screens</h2>
+
+        <h3>Home Screen (app/(tabs)/index.tsx)</h3>
+        <div class="screen-preview">
+            ┌─────────────────────────┐<br>
+            │   Coach ON/OFF Toggle   │<br>
+            └─────────────────────────┘<br>
+            │   Tone: Encouraging    │  (disabled, MVP only)<br>
+            └─────────────────────────┘<br>
+            │   [Connect Garmin]     │  (or "Connected" status)<br>
+            └─────────────────────────┘
+        </div>
+
+        <h3>Run Summary Screen (app/run-summary/[id].tsx)</h3>
+        <div class="screen-preview">
+            ┌─────────────────────────┐<br>
+            │    Run Summary          │<br>
+            └─────────────────────────┘<br>
+            │   Coach spoke to you    │<br>
+            │   X times during climbs │<br>
+            └─────────────────────────┘<br>
+            │   [View Run History]    │  (future feature)<br>
+            └─────────────────────────┘
+        </div>
+
+        <h2>Phase 8: Subscription & Monetization</h2>
+
+        <h3>Free Tier Limits</h3>
+        <ul>
+            <li>2 coached runs per week</li>
+            <li>Reset counter on Monday</li>
+            <li>Show upgrade prompt after 2nd coached run</li>
+        </ul>
+
+        <h3>Pro Subscription</h3>
+        <ul>
+            <li>€7.99/month</li>
+            <li>Unlimited coaching</li>
+            <li>Apple In-App Purchase / Google Play Billing</li>
+        </ul>
+
+        <h3>Upgrade Prompt Trigger</h3>
+        <p>After user completes their 2nd coached run of the week, show modal with:</p>
+        <ul>
+            <li>Pro benefits list</li>
+            <li>Subscribe button</li>
+            <li>Close button</li>
+        </ul>
+
+        <h2>Critical Files to Reference/Reuse</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Why</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>components/themed-view.tsx</code></td>
+                    <td>Theme-aware View, reuse for consistent styling</td>
+                </tr>
+                <tr>
+                    <td><code>components/themed-text.tsx</code></td>
+                    <td>Theme-aware Text, reuse for consistent styling</td>
+                </tr>
+                <tr>
+                    <td><code>constants/theme.ts</code></td>
+                    <td>Theme colors, may extend with coach-specific colors</td>
+                </tr>
+                <tr>
+                    <td><code>hooks/use-theme-color.ts</code></td>
+                    <td>Hook for accessing theme colors</td>
+                </tr>
+                <tr>
+                    <td><code>hooks/use-color-scheme.ts</code></td>
+                    <td>Light/dark mode detection</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Order</h2>
+        <ol class="order-list">
+            <li><strong>Cleanup</strong> - Remove demo code</li>
+            <li><strong>Types & Structure</strong> - TypeScript types + directories</li>
+            <li><strong>Core UI</strong> - Coach toggle, Garmin button</li>
+            <li><strong>Data Persistence</strong> - Storage, stores, hooks</li>
+            <li><strong>Garmin (Mock)</strong> - Mock data service, OAuth structure</li>
+            <li><strong>Audio & Coaching</strong> - Audio player, detection logic</li>
+            <li><strong>Run Summary</strong> - Summary screen and routing</li>
+            <li><strong>Subscription</strong> - IAP integration, upgrade prompt</li>
+            <li><strong>Real Garmin</strong> - Replace mock with Garmin Connect API</li>
+            <li><strong>Testing & Polish</strong> - End-to-end testing, UI polish</li>
+        </ol>
+
+        <h2>Verification</h2>
+        <p>After each phase, verify:</p>
+        <ol>
+            <li><strong>App runs without crashes</strong> - <code>npm start</code></li>
+            <li><strong>TypeScript compiles</strong> - No type errors</li>
+            <li><strong>UI renders correctly</strong> - Both light and dark themes</li>
+            <li><strong>State persists</strong> - App restart maintains settings</li>
+            <li><strong>Audio plays</strong> - Test playback through headphones</li>
+            <li><strong>Garmin OAuth</strong> - Test mock flow, then real flow</li>
+            <li><strong>Subscription</strong> - Test free limit, upgrade prompt, purchase</li>
+        </ol>
+    </div>
+</body>
+</html>

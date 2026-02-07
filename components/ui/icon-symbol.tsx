@@ -5,8 +5,8 @@ import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
-type IconSymbolName = keyof typeof MAPPING;
+type IconMapping = Record<string, ComponentProps<typeof MaterialIcons>['name']>;
+type IconSymbolName = keyof typeof MAPPING | string;
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -18,6 +18,29 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'checkmark.circle.fill': 'check-circle',
+  'checkmark': 'check',
+  'xmark.circle.fill': 'cancel',
+  'exclamationmark.triangle.fill': 'warning',
+  'info.circle.fill': 'info',
+  'heart.fill': 'favorite',
+  'bolt.fill': 'flash-on',
+  'face.smiling.fill': 'sentiment-satisfied',
+  'crown.fill': 'emoji-events',
+  'figure.run': 'directions-run',
+  'speaker.wave.2.fill': 'volume-up',
+  'speaker.slash.fill': 'volume-off',
+  'figure.stand': 'accessibility',
+  'map.fill': 'map',
+  'clock.fill': 'schedule',
+  'figure.walk': 'directions-walk',
+  'mountain.2.fill': 'terrain',
+  'flame.fill': 'local-fire-department',
+  'moon.fill': 'nightlight-round',
+  'sun.max.fill': 'wb-sunny',
+  'play.fill': 'play-arrow',
+  'pause.fill': 'pause',
+  'stop.fill': 'stop',
 } as IconMapping;
 
 /**
@@ -33,9 +56,10 @@ export function IconSymbol({
 }: {
   name: IconSymbolName;
   size?: number;
-  color: string | OpaqueColorValue;
+  color?: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const iconName = name in MAPPING ? MAPPING[name as keyof typeof MAPPING] : 'help';
+  return <MaterialIcons color={color || '#000'} size={size} name={iconName} style={style} />;
 }

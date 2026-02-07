@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'inverted' | 'invertedLarge';
 };
 
 export function ThemedText({
@@ -16,16 +16,23 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const invertedColor = useThemeColor({}, 'textInverted');
+
+  const textColor = (type === 'inverted' || type === 'invertedLarge')
+    ? invertedColor
+    : color;
 
   return (
     <Text
       style={[
-        { color },
+        { color: textColor },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'link' ? styles.link : undefined,
+        type === 'inverted' ? styles.inverted : undefined,
+        type === 'invertedLarge' ? styles.invertedLarge : undefined,
         style,
       ]}
       {...rest}
@@ -56,5 +63,16 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontSize: 16,
     color: '#0a7ea4',
+  },
+  inverted: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#FFFFFF',
+  },
+  invertedLarge: {
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
